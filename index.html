@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistente de Produção de Velas Artesanais</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #f093fb;
+            padding-bottom: 10px;
+        }
+
+        .candle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .candle-option {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 3px solid transparent;
+        }
+
+        .candle-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .candle-option.selected {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+
+        .candle-option .emoji {
+            font-size: 2.5em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .input-group {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .input-group.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideUp 0.5s;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results h3 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .result-item h4 {
+            color: #764ba2;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .result-item ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-item li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .result-item li:last-child {
+            border-bottom: none;
+        }
+
+        .defect-select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            margin-bottom: 20px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .defect-solution {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .defect-solution h4 {
+            color: #764ba2;
+            margin-bottom: 15px;
+        }
+
+        .defect-solution .cause {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .defect-solution .solution {
+            background: #d1ecf1;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #764ba2;
+            border-bottom-color: #f5576c;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🕯️ Assistente de Produção de Velas</h1>
+            <p>Recomendações técnicas personalizadas para suas velas artesanais</p>
+        </div>
+
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('production')">Produção de Velas</button>
+                <button class="tab" onclick="switchTab('defects')">Solução de Defeitos</button>
+            </div>
+
+            <div id="production-tab" class="tab-content active">
+                <div class="section">
+                    <h2>1. Escolha o Tipo de Vela</h2>
+                    <div class="candle-grid" id="candleGrid">
+                        <div class="candle-option" data-type="recipiente">
+                            <span class="emoji">🕯️</span>
+                            <strong>Vela de Recipiente</strong>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Copo, pote, cerâmica</p>
+                        </div>
+                        <div class="candle-option" data-type="pilar">
+                            <span class="emoji">🕯️</span>
+                            <strong>Vela Pilar</strong>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Cilíndrica/quadrada</p>
+                        </div>
+                        <div class="candle-option" data-type="votiva">
+                            <span class="emoji">🕯️</span>
+                            <strong>Vela Votiva</strong>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Pequena e devocional</p>
+                        </div>
+                        <div class="candle-option" data-type="tealight">
+                            <span class="emoji">🕯️</span>
+                            <strong>Vela Tealight</strong>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Mini em base metálica</p>
+                        </div>
+                        <div class="candle-option" data-type="massagem">
+                            <span class="emoji">🕯️</span>
+                            <strong>Vela de Massagem</strong>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Derrete em óleo</p>
+                        </div>
+                        <div class="candle-option" data-type="decorativa">
+                            <span class="emoji">🕯️</span>
+                            <strong>Vela Esculpida</strong>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Decorativa artesanal</p>
+                        </div>
+                        <div class="candle-option" data-type="molde">
+                            <span class="emoji">🕯️</span>
+                            <strong>Vela de Molde</strong>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Formas 3D variadas</p>
+                        </div>
+                        <div class="candle-option" data-type="gel">
+                            <span class="emoji">🕯️</span>
+                            <strong>Vela em Gel</strong>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Transparente aquosa</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="dimensionsInput">
+                        <label id="dimensionLabel">Informe as dimensões:</label>
+                        <input type="number" id="diameter" placeholder="Diâmetro (cm)" step="0.1" min="0">
+                        <input type="number" id="height" placeholder="Altura (cm)" step="0.1" min="0" style="margin-top: 10px; display: none;">
+                    </div>
+
+                    <button class="btn" id="generateBtn" onclick="generateRecommendations()" disabled>
+                        Gerar Recomendações Técnicas
+                    </button>
+                </div>
+
+                <div class="results" id="results">
+                    <h3>📋 Recomendações Técnicas Personalizadas</h3>
+                    <div id="resultsContent"></div>
+                </div>
+            </div>
+
+            <div id="defects-tab" class="tab-content">
+                <div class="section">
+                    <h2>🔧 Solução de Defeitos em Velas</h2>
+                    <p style="margin-bottom: 20px; color: #666;">Selecione o defeito que você está enfrentando para receber orientações detalhadas:</p>
+                    
+                    <select class="defect-select" id="defectSelect" onchange="showDefectSolution()">
+                        <option value="">-- Selecione um defeito --</option>
+                        <option value="buracos">Buracos internos</option>
+                        <option value="afundamento">Afundamento no centro (sinkhole)</option>
+                        <option value="frosting">Frosting (cristalização na superfície)</option>
+                        <option value="fuligem">Fuligem/Fumaça excessiva</option>
+                        <option value="tunel">Túnel / Piscina incompleta</option>
+                        <option value="fragrancia">Fragrância fraca</option>
+                        <option value="superficie">Superfície irregular</option>
+                        <option value="rachaduras">Rachaduras (pilar/molde)</option>
+                        <option value="bolhas">Bolhas de ar</option>
+                        <option value="descolamento">Descolamento do vidro (wet spots)</option>
+                        <option value="suor">Suor/Sweating (óleo na superfície)</option>
+                        <option value="desmoldar">Dificuldade em desmoldar</option>
+                        <option value="chama_fraca">Chama fraca</option>
+                        <option value="chama_apaga">Chama que apaga</option>
+                        <option value="piscininha">Piscininha incompleta</option>
+                        <option value="cogumelo">Coroa/Cogumelo no pavio</option>
+                    </select>
+
+                    <div id="defectSolutionContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedCandle = null;
+
+        // Função para trocar abas
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        const candleOptions = document.querySelectorAll('.candle-option');
+        const dimensionsInput = document.getElementById('dimensionsInput');
+        const heightInput = document.getElementById('height');
+        const generateBtn = document.getElementById('generateBtn');
+
+        candleOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                candleOptions.forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedCandle = this.dataset.type;
+                
+                dimensionsInput.classList.add('show');
+                
+                if (selectedCandle === 'recipiente' || selectedCandle === 'gel' || selectedCandle === 'massagem') {
+                    document.getElementById('dimensionLabel').textContent = 'Informe o diâmetro interno do recipiente:';
+                    heightInput.style.display = 'none';
+                } else if (selectedCandle === 'pilar' || selectedCandle === 'votiva' || selectedCandle === 'molde') {
+                    document.getElementById('dimensionLabel').textContent = 'Informe diâmetro e altura para cálculo do pavio:';
+                    heightInput.style.display = 'block';
+                } else {
+                    dimensionsInput.classList.remove('show');
+                }
+                
+                generateBtn.disabled = false;
+            });
+        });
+
+        function generateRecommendations() {
+            if (!selectedCandle) return;
+
+            const diameter = document.getElementById('diameter').value;
+            const height = document.getElementById('height').value;
+            
+            const recommendations = {
+                recipiente: {
+                    title: 'Vela de Recipiente',
+                    cera: ['Soja 464 (excelente)', 'Soja 444', 'Coco', 'Parafina container', 'Ecomix'],
+                    blend: ['Soja + Coco (70/30)', 'Soja + Parafina (50/50)', 'Soja + Ecomix (80/20)', 'Palma container + Soja (70/30)'],
+                    pavio: ['Algodão trançado', 'Algodão encerado', 'Núcleo de papel', 'Madeira simples ou dupla'],
+                    suporte: ['Ilhós metálico', 'Adesivo térmico', 'Centralizador (holder/clip)'],
+                    fragrancia: 'Soja/Coco/Ecomix: 6–10% | Parafina: até 12%',
+                    temp_fusao: 'Soja: 70–85°C | Coco: 60–70°C | Parafina: 70–90°C | Ecomix: 70–80°C',
+                    temp_fragrancia: '60–70°C',
+                    temp_derramamento: '55–65°C (recipiente pré-aquecido)'
+                },
+                pilar: {
+                    title: 'Vela Pilar',
+                    cera: ['Parafina pilar', 'Palma pilar', 'Abelha', 'Soja + Estearina'],
+                    blend: ['Palma pilar + Estearina (80/20)', 'Palma pilar + Parafina (60/40)', 'Abelha + Soja (70/30)'],
+                    pavio: ['Algodão chanfrado', 'Algodão trançado (grosso)', 'Núcleo de papel'],
+                    suporte: ['Ilhós metálico reforçado', 'Base de ancoragem'],
+                    fragrancia: 'Parafina: até 12% | Palma: 6–8% | Abelha: até 5%',
+                    temp_fusao: 'Parafina: 70–90°C | Palma: 80–95°C | Abelha: 65–75°C',
+                    temp_fragrancia: '60–70°C',
+                    temp_derramamento: '60–75°C (em temperatura ambiente controlada)'
+                },
+                votiva: {
+                    title: 'Vela Votiva',
+                    cera: ['Soja 464', 'Parafina votiva', 'Coco', 'Palma'],
+                    blend: ['Soja + Parafina (50/50)', 'Soja + Coco (70/30)'],
+                    pavio: ['Algodão trançado (fino)', 'Núcleo de papel', 'Algodão encerado'],
+                    suporte: ['Ilhós metálico pequeno', 'Adesivo térmico'],
+                    fragrancia: 'Soja/Coco: 6–10% | Parafina: até 12%',
+                    temp_fusao: 'Soja: 70–85°C | Parafina: 70–90°C | Coco: 60–70°C',
+                    temp_fragrancia: '60–70°C',
+                    temp_derramamento: '60–70°C'
+                },
+                tealight: {
+                    title: 'Vela Tealight',
+                    cera: ['Parafina', 'Soja', 'Palma'],
+                    blend: ['Soja + Parafina (50/50)'],
+                    pavio: ['Algodão trançado (muito fino)', 'Núcleo de papel'],
+                    suporte: ['Base de tealight (alumínio/policarbonato)', 'Ilhós micro'],
+                    fragrancia: 'Soja: 6–10% | Parafina: até 12%',
+                    temp_fusao: 'Soja: 70–85°C | Parafina: 70–90°C',
+                    temp_fragrancia: '60–70°C',
+                    temp_derramamento: '65–75°C'
+                },
+                massagem: {
+                    title: 'Vela de Massagem',
+                    cera: ['Soja', 'Coco (preferencial)', 'Abelha + Óleos vegetais'],
+                    blend: ['Soja + Coco (70/30)', 'Coco + Óleos essenciais', 'Abelha + Soja (70/30)'],
+                    pavio: ['Algodão trançado', 'Madeira', 'Núcleo de papel'],
+                    suporte: ['Ilhós metálico', 'Centralizador'],
+                    fragrancia: 'Coco/Soja: 3–6% (óleos seguros para pele) | Abelha: até 3%',
+                    temp_fusao: 'Coco: 60–70°C | Soja: 70–85°C | Abelha: 65–75°C',
+                    temp_fragrancia: '55–65°C (óleos para massagem)',
+                    temp_derramamento: '50–60°C (baixa para não queimar a pele)',
+                    extra: '⚠️ Use apenas fragrâncias skin-safe e óleos vegetais'
+                },
+                decorativa: {
+                    title: 'Vela Decorativa Esculpida',
+                    cera: ['Parafina', 'Abelha', 'Palma pilar'],
+                    blend: ['Parafina + Estearina (85/15)', 'Abelha pura'],
+                    pavio: ['Algodão chanfrado', 'Núcleo de papel', 'Sem pavio (apenas decorativa)'],
+                    suporte: ['Ilhós reforçado (se funcional)', 'Guias para moldagem'],
+                    fragrancia: 'Opcional: Parafina até 10% | Abelha até 5% (ou sem fragrância)',
+                    temp_fusao: 'Parafina: 70–90°C | Abelha: 65–75°C',
+                    temp_fragrancia: '60–70°C',
+                    temp_derramamento: '70–80°C para detalhes nítidos',
+                    extra: '🎨 Ideal para escultura e entalhes artísticos'
+                },
+                molde: {
+                    title: 'Vela de Molde 3D',
+                    cera: ['Parafina', 'Palma pilar', 'Abelha'],
+                    blend: ['Parafina + Estearina (80/20)', 'Palma pilar + Parafina (60/40)'],
+                    pavio: ['Algodão chanfrado', 'Núcleo de papel', 'Pavio central para moldes'],
+                    suporte: ['Guias para molde', 'Passa-pavio', 'Agulha de moldagem'],
+                    fragrancia: 'Parafina: até 10% | Palma: 6–8% | Abelha: até 5%',
+                    temp_fusao: 'Parafina: 70–90°C | Palma: 80–95°C | Abelha: 65–75°C',
+                    temp_fragrancia: '60–70°C',
+                    temp_derramamento: '70–80°C (molde aquecido para evitar rachaduras)',
+                    extra: '🧊 Use desmoldante ou refrigere para fácil remoção'
+                },
+                gel: {
+                    title: 'Vela Transparente em Gel',
+                    cera: ['Gel de vela (baixa, média ou alta densidade)'],
+                    blend: ['Gel 100% (não misturar com ceras tradicionais)'],
+                    pavio: ['Núcleo metálico (zinc core - essencial para gel)', 'Algodão encerado grosso'],
+                    suporte: ['Ilhós reforçado', 'Centralizador metálico'],
+                    fragrancia: '3–5% (somente fragrâncias compatíveis com gel)',
+                    temp_fusao: '95–105°C',
+                    temp_fragrancia: '80–85°C',
+                    temp_derramamento: '85–95°C (recipiente pré-aquecido a 50°C)',
+                    extra: '⚠️ Evite bolhas: mexa devagar e aqueça o recipiente antes'
+                }
+            };
+
+            const data = recommendations[selectedCandle];
+            let wickSize = '';
+            
+            if (diameter && (selectedCandle === 'pilar' || selectedCandle === 'votiva' || selectedCandle === 'molde')) {
+                wickSize = calculateWickSize(parseFloat(diameter), parseFloat(height) || 0);
+            } else if (diameter && (selectedCandle === 'recipiente' || selectedCandle === 'gel' || selectedCandle === 'massagem')) {
+                wickSize = calculateWickSize(parseFloat(diameter), 0);
+            }
+
+            let html = `<h3 style="color: #f5576c; margin-bottom: 20px;">🕯️ ${data.title}</h3>`;
+            
+            if (wickSize) {
+                html += `<div class="result-item" style="background: #d4edda; border-left-color: #28a745;">
+                    <h4>🎯 Recomendação de Pavio</h4>
+                    <p style="font-size: 1.1em; color: #155724; font-weight: bold;">${wickSize}</p>
+                </div>`;
+            }
+
+            html += `
+                <div class="result-item">
+                    <h4>🧴 Tipos de Cera Recomendados</h4>
+                    <ul>${data.cera.map(c => `<li>✓ ${c}</li>`).join('')}</ul>
+                </div>
+
+                <div class="result-item">
+                    <h4>🔬 Blends de Cera Ideais</h4>
+                    <ul>${data.blend.map(b => `<li>✓ ${b}</li>`).join('')}</ul>
+                </div>
+
+                <div class="result-item">
+                    <h4>🧵 Tipos de Pavio Recomendados</h4>
+                    <ul>${data.pavio.map(p => `<li>✓ ${p}</li>`).join('')}</ul>
+                </div>
+
+                <div class="result-item">
+                    <h4>⚙️ Suportes e Fixação</h4>
+                    <ul>${data.suporte.map(s => `<li>✓ ${s}</li>`).join('')}</ul>
+                </div>
+
+                <div class="result-item">
+                    <h4>🌸 Carga de Fragrância Segura</h4>
+                    <p style="padding: 10px; background: #e7f3ff; border-radius: 5px;">${data.fragrancia}</p>
+                </div>
+
+                <div class="result-item">
+                    <h4>🌡️ Temperaturas Ideais</h4>
+                    <ul>
+                        <li><strong>Fusão:</strong> ${data.temp_fusao}</li>
+                        <li><strong>Adição de fragrância:</strong> ${data.temp_fragrancia}</li>
+                        <li><strong>Derramamento:</strong> ${data.temp_derramamento}</li>
+                    </ul>
+                </div>
+            `;
+
+            if (data.extra) {
+                html += `<div class="result-item" style="background: #fff3cd; border-left-color: #ffc107;">
+                    <p style="font-size: 1.1em; margin: 0;">${data.extra}</p>
+                </div>`;
+            }
+
+            document.getElementById('resultsContent').innerHTML = html;
+            document.getElementById('results').classList.add('show');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function calculateWickSize(diameter, height) {
+            if (diameter < 4) return 'Pavio fino (ECO 2, CD 4, ou similar)';
+            if (diameter < 6) return 'Pavio médio-fino (ECO 4, CD 6, ou similar)';
+            if (diameter < 8) return 'Pavio médio (ECO 6, CD 8, ou similar)';
+            if (diameter < 10) return 'Pavio médio-grosso (ECO 8, CD 10, ou similar)';
+            if (diameter < 12) return 'Pavio grosso (ECO 10, CD 12, ou similar)';
+            return 'Pavio extra-grosso (ECO 12+, CD 14+, ou considerar madeira dupla)';
+        }
+
+        const defects = {
+            buracos: {
+                cause: 'Bolsões de ar presos durante o resfriamento ou cera derramada muito quente',
+                solution: 'Derrame a cera em temperatura adequada (55-65°C para recipientes). Bata levemente o recipiente após derramar para liberar bolhas. Faça um segundo derramamento para preencher afundamentos.'
+            },
+            afundamento: {
+                cause: 'Contração natural da cera ao resfriar, especialmente no centro',
+                solution: 'Reserve cera aquecida para um segundo derramamento. Após 2-3 horas do primeiro derramamento, aqueça a cera reservada e preencha o afundamento. Use temperatura de derramamento mais baixa.'
+            },
+            frosting: {
+                cause: 'Cristalização natural da cera de soja, causada por variações de temperatura',
+                solution: 'É normal em soja! Para minimizar: resfrie a vela lentamente em local sem correntes de ar. Use aditivos específicos anti-frosting. Pré-aqueça os recipientes. Considere usar blend de soja com outras ceras.'
+            },
+            fuligem: {
+                cause: 'Pavio muito grosso para o diâmetro, excesso de fragrância, ou cera inadequada',
+                solution: 'Use pavio mais fino adequado ao diâmetro. Reduza a carga de fragrância para 6-8%. Apare o pavio em 5-6mm antes de cada uso. Use cera de melhor qualidade.'
+            },
+            tunel: {
+                cause: 'Pavio muito fino, primeira queima insuficiente, ou recipiente muito largo',
+                solution: 'Use pavio mais grosso. Na primeira queima, deixe a cera derreter até as bordas (mínimo 2-3 horas). Teste sempre o tamanho do pavio. Considere usar pavio de madeira para diâmetros maiores.'
+            },
+            fragrancia: {
+                cause: 'Carga baixa de fragrância, temperatura incorreta de adição, ou fragrância de má qualidade',
+                solution: 'Aumente para 8-10% (respeitando o limite da cera). Adicione fragrância entre 60-70°C. Use essências concentradas de qualidade. Deixe a vela curar por 7-14 dias antes do teste.'
+            },
+            superficie: {
+                cause: 'Temperatura de derramamento inadequada, resfriamento rápido demais, ou correntes de ar',
+                solution: 'Ajuste temperatura de derramamento (55-65°C para recipientes). Resfrie em ambiente controlado, sem correntes de ar. Use soprador térmico para suavizar a superfície após solidificação inicial.'
+            },
+            rachaduras: {
+                cause: 'Resfriamento muito rápido, diferença de temperatura entre cera e ambiente, ou molde frio',
+                solution: 'Aqueça o molde antes de derramar. Resfrie lentamente em temperatura ambiente. Evite colocar em geladeira. Use cera com ponto de fusão adequado. Adicione estearina (10-20%) para maior resistência.'
+            },
+            bolhas: {
+                cause: 'Ar incorporado durante o derramamento ou temperatura muito alta',
+                solution: 'Derrame a cera lentamente pelo lado do recipiente. Bata levemente o recipiente após derramar. Use palito para estourar bolhas visíveis. Aqueça o recipiente antes do derramamento. Em gel: aqueça muito lentamente e mexa com cuidado.'
+            },
+            descolamento: {
+                cause: 'Choque térmico, recipiente não aquecido, ou incompatibilidade de cera com vidro',
+                solution: 'Pré-aqueça os recipientes com soprador térmico ou em forno baixo (50-60°C). Use ceras específicas para recipiente. Adicione aditivo de aderência. Derrame em temperatura adequada (60-65°C). Evite correntes de ar durante resfriamento.'
+            },
+            suor: {
+                cause: 'Excesso de fragrância, variação de temperatura, ou fragrância incompatível com a cera',
+                solution: 'Reduza carga de fragrância para 6-8%. Use fragrâncias específicas para a cera. Armazene em local com temperatura estável. Adicione a fragrância na temperatura correta (60-70°C). Deixe curar adequadamente.'
+            },
+            desmoldar: {
+                cause: 'Molde não preparado, cera ainda não totalmente solidificada, ou temperatura inadequada',
+                solution: 'Use desmoldante em spray ou óleo vegetal no molde. Polvilhe amido de milho (maisena) dentro do molde antes de derramar a cera - funciona muito bem! Coloque no freezer por 15-30min antes de desmoldar. Aguarde resfriamento completo (4-6 horas). Use moldes de silicone ou policarbonato. Para abelha: aqueça levemente o molde por fora.'
+            },
+            chama_fraca: {
+                cause: 'Pavio muito fino, cera muito dura, ou excesso de aditivos',
+                solution: 'Use pavio mais grosso adequado ao diâmetro. Reduza estearina ou endurecedores. Teste diferentes tipos de pavio (trançado, madeira). Verifique se o pavio não está contaminado com cera.'
+            },
+            chama_apaga: {
+                cause: 'Pavio afogado em cera derretida, pavio muito curto, ou pavio inadequado',
+                solution: 'Use pavio auto-sustentável (com núcleo). Aumente espessura do pavio. Mantenha pavio aparado em 5-6mm. Para gel: use apenas pavio com núcleo metálico (zinc core). Teste a queima antes da produção.'
+            },
+            piscininha: {
+                cause: 'Pavio muito fino para o diâmetro do recipiente',
+                solution: 'Use pavio mais grosso. Faça testes de queima para encontrar o tamanho ideal. Para diâmetros acima de 8cm, considere pavio duplo ou madeira. Verifique a tabela de pavios por diâmetro.'
+            },
+            cogumelo: {
+                cause: 'Pavio muito grosso, excesso de fragrância, ou aditivos incompatíveis',
+                solution: 'Use pavio mais fino. Reduza carga de fragrância. Apare o pavio regularmente em 5-6mm. Use pavio de melhor qualidade (algodão natural). Para gel: é mais comum, apare com frequência.'
+            }
+        };
+
+        function showDefectSolution() {
+            const select = document.getElementById('defectSelect');
+            const content = document.getElementById('defectSolutionContent');
+            const defectKey = select.value;
+            
+            if (!defectKey) {
+                content.innerHTML = '';
+                return;
+            }
+            
+            const defect = defects[defectKey];
+            const defectNames = {
+                buracos: 'Buracos Internos',
+                afundamento: 'Afundamento no Centro (Sinkhole)',
+                frosting: 'Frosting (Cristalização)',
+                fuligem: 'Fuligem/Fumaça Excessiva',
+                tunel: 'Túnel / Piscina Incompleta',
+                fragrancia: 'Fragrância Fraca',
+                superficie: 'Superfície Irregular',
+                rachaduras: 'Rachaduras',
+                bolhas: 'Bolhas de Ar',
+                descolamento: 'Descolamento do Vidro (Wet Spots)',
+                suor: 'Suor/Sweating',
+                desmoldar: 'Dificuldade em Desmoldar',
+                chama_fraca: 'Chama Fraca',
+                chama_apaga: 'Chama que Apaga',
+                piscininha: 'Piscininha Incompleta',
+                cogumelo: 'Coroa/Cogumelo no Pavio'
+            };
+            
+            content.innerHTML = `
+                <div class="defect-solution">
+                    <h4>🔍 ${defectNames[defectKey]}</h4>
+                    <div class="cause">
+                        <strong>⚠️ Causa Provável:</strong><br>
+                        ${defect.cause}
+                    </div>
+                    <div class="solution">
+                        <strong>✅ Solução:</strong><br>
+                        ${defect.solution}
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
